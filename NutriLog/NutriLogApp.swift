@@ -7,6 +7,5 @@ struct NutriLogApp: App {
         WindowGroup {
             RootView()
         }
-        .modelContainer(PersistenceController.shared.container)
     }
 }
