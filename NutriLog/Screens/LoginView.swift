@@ -1,11 +1,16 @@
 import SwiftUI
+import LocalAuthentication
 
 struct LoginView: View {
+    var onLoginSuccess: () -> Void
+    
     var body: some View {
-        Text("Vue Connexion")
+        Image("image")
+        
+        
     }
 }
 
 #Preview {
-    LoginView()
+    LoginView(onLoginSuccess: {})
 }

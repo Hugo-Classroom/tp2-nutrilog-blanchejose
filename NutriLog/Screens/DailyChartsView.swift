@@ -1,10 +1,15 @@
 import SwiftUI
+import Charts
 
 struct DailyChartsView: View {
     var body: some View {
-        Text("Vue Graphiques")
+        Image("nutrilog-logo")
+        ScrollView {
+         
+        }
     }
 }
+
 
 #Preview {
     DailyChartsView()
