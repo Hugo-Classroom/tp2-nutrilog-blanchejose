@@ -7,24 +7,26 @@ struct MealRow: View {
 
     var body: some View {
         if entries.isEmpty { EmptyView() }
+        
         else {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(mealType.rawValue)
-                        .font(.subheadline)
-                        .fontWeight(.bold)
+            HStack {
+                Text(mealType.rawValue)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.secondary)
+                Spacer()
+                let totalCalories = entries.reduce(0) { $0 + $1.calories }
+                if totalCalories > 0 {
+                    Text("\(Int(totalCalories)) CAL")
+                        .font(.caption)
+                        .fontWeight(.semibold)
                         .foregroundColor(.secondary)
-                    Spacer()
-                    let totalCalories = entries.reduce(0) { $0 + $1.calories }
-                    if totalCalories > 0 {
-                        Text("\(Int(totalCalories)) CAL")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.secondary)
-                    }
                 }
-                .padding(.horizontal, 16)
-                .padding(.top,8)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top,8)
+            VStack(alignment: .leading, spacing: 4) {
+             
                 ForEach(entries.indices, id: \.self) { i in
                     let entry = entries[i]
                     HStack(spacing: 0) {
@@ -69,4 +71,10 @@ struct MealRow: View {
             }
         }
     }
+}
+#Preview {
+    MealRow(
+        mealType: .breakfast,
+        entries: MockData.foodEntries.filter { $0.mealType == .breakfast }
+    )
 }

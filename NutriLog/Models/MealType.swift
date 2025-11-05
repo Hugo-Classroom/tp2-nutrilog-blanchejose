@@ -1,9 +1,9 @@
 import Foundation
 
 enum MealType: String, CaseIterable, Identifiable, Codable {
-    case breakfast = "Déjeuner"
-    case lunch = "Dîner"
-    case dinner = "Souper"
+    case breakfast = "DÉJEUNER"
+    case lunch = "DÎNER"
+    case dinner = "SOUPER"
     
     var id: String { rawValue }
 }

@@ -10,10 +10,7 @@ struct AddMealView: View {
 
     
     var body: some View {
-        Image("test2")
-        
-        Spacer()
-        
+            
         NavigationView {
             Form {
                 Picker("Aliment", selection: $selectedFood) {

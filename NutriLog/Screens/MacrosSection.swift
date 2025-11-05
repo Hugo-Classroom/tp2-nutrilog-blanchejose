@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct MacrosSection: View {
@@ -18,23 +17,49 @@ struct MacrosSection: View {
     }
 
     var body: some View {
-        HStack(spacing: 18) {
-            macroPill(color: .red, title: "Protéines", value: protein, goal: proteinGoal, icon: "p.circle.fill")
-            macroPill(color: .purple, title: "Glucides", value: carbs, goal: carbsGoal, icon: "g.circle.fill")
-            macroPill(color: .blue, title: "Lipides", value: fat, goal: fatGoal, icon: "l.circle.fill")
+        
+        Text("MACROS")
+            .foregroundColor(.gray)
+            .padding(.leading, 12)
+        
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 18) {
+                macroPill(color: .red, title: "Protéines", value: protein, goal: proteinGoal, icon: "p.circle.fill")
+                macroPill(color: .purple, title: "Glucides", value: carbs, goal: carbsGoal, icon: "g.circle.fill")
+                macroPill(color: .blue, title: "Lipides", value: fat, goal: fatGoal, icon: "l.circle.fill")
+            }
+            .padding(.horizontal)
         }
+        .padding(.vertical, 12)
+        .background(Color.white)
+        .cornerRadius(14)
         .padding(.horizontal)
     }
 
     func macroPill(color: Color, title: String, value: Double, goal: Double, icon: String) -> some View {
-        VStack(alignment: .center, spacing: 2) {
+        VStack(spacing: 6) {
             HStack(spacing: 4) {
-                Image(systemName: icon).foregroundColor(color)
-                Text(title).font(.caption2).foregroundColor(.secondary)
+                Image(systemName: icon)
+                Text(title)
+                    .fontWeight(.semibold)
             }
-            Text("\(Int(value))/\(Int(goal))g")
-                .font(.subheadline).fontWeight(.medium)
+            .foregroundColor(color)
+            ProgressView(value: min(value / goal, 2.0))
+                .progressViewStyle(.linear)
+                .tint(color)
+                .frame(height: 6)
+            
+            Text("\(Int(value))/\(Int(goal)) g")
+
+            
         }
-        .frame(maxWidth: .infinity)
     }
 }
+
+#Preview {
+    ZStack {
+        Color(.systemGray6).ignoresSafeArea()
+        MacrosSection(foodEntries: MockData.foodEntries)
+    }
+}
+
