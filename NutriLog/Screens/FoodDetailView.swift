@@ -1,99 +1,78 @@
 import SwiftUI
-
+// 🔹 Vue de détail d'un aliment (à créer)
 struct FoodDetailView: View {
-    let food: Food
-    let entries: [FoodEntry]
-
+    let entry: FoodEntry
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Header
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(food.name)
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.primary)
-                    Text("\(Int(food.calories)) cal")
-                        .font(.title3)
-                        .fontWeight(.regular)
-                        .foregroundColor(.secondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text(entry.food?.name ?? "Aliment")
+                    .font(.title)
+                    .fontWeight(.bold)
+                
+                if let desc = entry.food?.desc {
+                    Text(desc)
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
-                Spacer()
-                HStack(spacing: 20) {
-                    VStack(spacing: 2) {
-                        Text("\(Int(food.protein))")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        Text("g")
-                            .font(.caption2)
-                        Text("Protéines")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(spacing: 2) {
-                        Text("\(Int(food.carbs))")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        Text("g")
-                            .font(.caption2)
-                        Text("Glucides")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(spacing: 2) {
-                        Text("\(Int(food.fat))")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                        Text("g")
-                            .font(.caption2)
-                        Text("Lipides")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top)
-
-            // Historique
-            Text("Historique de consommation")
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.horizontal)
-                .padding(.top, 16)
-            
-            VStack(spacing: 0) {
-                ForEach(entries, id: \.date) { entry in
+                
+                // Informations nutritionnelles
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Informations nutritionnelles")
+                        .font(.headline)
+                    
                     HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.mealType.rawValue)
-                                .font(.body)
-                            Text(entry.date, style: .date)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                        Text("Calories:")
+                        Spacer()
+                        Text("\(Int(entry.calories)) kcal")
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "p.circle.fill")
+                            .foregroundColor(.red)
+                        Text("Protéines:")
+                        Spacer()
+                        Text("\(String(format: "%.1f", (entry.food?.protein ?? 0) * entry.servingSize / 100)) g")
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "g.circle.fill")
+                            .foregroundColor(.purple)
+                        Text("Glucides:")
+                        Spacer()
+                        Text("\(String(format: "%.1f", (entry.food?.carbs ?? 0) * entry.servingSize / 100)) g")
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "l.circle.fill")
+                            .foregroundColor(.blue)
+                        Text("Lipides:")
+                        Spacer()
+                        Text("\(String(format: "%.1f", (entry.food?.fat ?? 0) * entry.servingSize / 100)) g")
+                            .fontWeight(.semibold)
+                    }
+                    
+                    HStack {
+                        Text("Portion:")
                         Spacer()
                         Text("\(Int(entry.servingSize)) g")
-                            .foregroundColor(.secondary)
-                            .font(.body)
+                            .fontWeight(.semibold)
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
                 }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                
+                Spacer()
             }
-            .background(Color(.systemBackground))
-
-            Spacer()
+            .padding()
         }
-        .navigationTitle("")
+        .navigationTitle("Détail")
         .navigationBarTitleDisplayMode(.inline)
-        .background(Color(.systemBackground))
     }
 }
 
-#Preview {
-    FoodDetailView(
-        food: MockData.banana, // ou MockData.proteinFood selon le cas
-        entries: MockData.foodEntries.filter { $0.food?.name == MockData.banana.name }
-    )
-}
 

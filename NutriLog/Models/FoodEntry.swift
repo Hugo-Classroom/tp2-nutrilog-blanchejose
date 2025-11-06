@@ -4,7 +4,7 @@ import SwiftData
 @Model
 class FoodEntry {
     var date: Date
-    var servingSize: Double // en grammes (ex: 150 g)
+    var servingSize: Double // en grammes 
     var food: Food?
     var mealType: MealType
     
@@ -15,7 +15,7 @@ class FoodEntry {
         self.date = date
     }
 
-    // Exemple de calcul pour déterminer le nombre de calories de l'aliment par 100g de portion (à faire pour les autres aussi!)
+    // Exemple de calcul pour déterminer le nombre de calories de l'aliment par 100g de portion
     var calories: Double {
         guard let food else { return 0 }
         return food.calories * servingSize / 100
