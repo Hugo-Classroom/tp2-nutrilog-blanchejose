@@ -4,6 +4,7 @@ struct MealRow: View {
     var mealType: MealType
     var entries: [FoodEntry]
     var onTap: (Food) -> Void
+    var onDelete: (FoodEntry) -> Void
 
     var totalCalories: Int {
         entries.reduce(0) { $0 + Int($1.calories) }
@@ -34,7 +35,7 @@ struct MealRow: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 12)
+                .padding()
 
                 VStack(spacing: 10) {
                     ForEach(entries, id: \.id) { entry in
@@ -44,8 +45,8 @@ struct MealRow: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(entry.food?.name ?? "-")
-                                    .foregroundColor(.black)
-
+                                        .foregroundColor(.black)
+                                    
                                     if let desc = entry.food?.desc {
                                         Text(desc)
                                             .font(.caption2)
@@ -53,12 +54,9 @@ struct MealRow: View {
                                     }
                                 }
                                 Spacer()
-                                HStack(spacing: 4) {
-                                    
-                                    Text("\(Int(entry.calories)) kcal")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
+                                Text("\(Int(entry.calories)) kcal")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }
@@ -67,6 +65,13 @@ struct MealRow: View {
                             .background(Color(.systemBackground))
                             .cornerRadius(12)
                             .shadow(color: Color(.systemGray5), radius: 2, x: 0, y: 2)
+                        }
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                onDelete(entry)
+                            } label: {
+                                Label("Supprimer", systemImage: "trash")
+                            }
                         }
                     }
                 }
@@ -98,11 +103,15 @@ struct MacroCircle: View {
 #Preview {
     struct PreviewHolder: View {
         @State var showDetail: Food? = nil
+        @State var entries: [FoodEntry] = MockData.foodEntries.filter { $0.mealType == .breakfast }
         var body: some View {
             MealRow(
                 mealType: .breakfast,
-                entries: MockData.foodEntries.filter { $0.mealType == .breakfast },
-                onTap: { _ in }
+                entries: entries,
+                onTap: { _ in },
+                onDelete: { entry in
+                    entries.removeAll { $0.id == entry.id }
+                }
             )
         }
     }

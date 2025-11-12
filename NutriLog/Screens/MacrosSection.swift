@@ -17,7 +17,6 @@ struct MacrosSection: View {
     }
 
     var body: some View {
-        
         Text("MACROS")
             .foregroundColor(.gray)
             .padding(.leading, 12)
