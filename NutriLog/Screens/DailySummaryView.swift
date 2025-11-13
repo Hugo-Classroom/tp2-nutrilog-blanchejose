@@ -4,11 +4,11 @@ import SwiftData
 struct DailySummaryView: View {
     @Query(sort: [SortDescriptor(\FoodEntry.date, order: .reverse)]) private var foodEntries: [FoodEntry]
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var showAddMeal = false
     @State private var showDetail: Food? = nil
     @State private var selectedTab: String = "Journée"
-    
+
     var body: some View {
         VStack(spacing: 0) {
             Group {
@@ -16,7 +16,6 @@ struct DailySummaryView: View {
                     NavigationView {
                         ZStack {
                             Color(.systemGray6).ignoresSafeArea()
-                            
                             ScrollView {
                                 VStack(alignment: .leading, spacing: 14) {
                                     HStack {
@@ -32,10 +31,10 @@ struct DailySummaryView: View {
                                     }
                                     .padding(.horizontal, 18)
                                     .padding(.top, 10)
-                                    
+
                                     CaloriesSection(foodEntries: foodEntries)
                                     MacrosSection(foodEntries: foodEntries)
-                                    
+
                                     ForEach(MealType.allCases) { type in
                                         MealRow(
                                             mealType: type,
@@ -44,7 +43,7 @@ struct DailySummaryView: View {
                                             onDelete: { _ in }
                                         )
                                     }
-                                    
+
                                     Spacer(minLength: 32)
                                 }
                             }
@@ -54,7 +53,6 @@ struct DailySummaryView: View {
                                 .environment(\.modelContext, modelContext)
                         }
                         .sheet(item: $showDetail) { food in
-                            
                             FoodDetailView(food: food)
                                 .environment(\.modelContext, modelContext)
                         }
@@ -64,9 +62,9 @@ struct DailySummaryView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+
             Divider()
-            
+
             HStack(spacing: 50) {
                 Button(action: { selectedTab = "Journée" }) {
                     VStack(spacing: 4) {
@@ -78,7 +76,7 @@ struct DailySummaryView: View {
                             .foregroundColor(selectedTab == "Journée" ? .orange : .gray)
                     }
                 }
-                
+
                 Button(action: { selectedTab = "Graphiques" }) {
                     VStack(spacing: 4) {
                         Image(systemName: "chart.pie.fill")
@@ -98,7 +96,7 @@ struct DailySummaryView: View {
     }
 }
 
-#Preview() {
+#Preview {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: Food.self, FoodEntry.self, configurations: config)
@@ -124,4 +122,3 @@ struct DailySummaryView: View {
         fatalError("Erreur de preview : \(error.localizedDescription)")
     }
 }
-

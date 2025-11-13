@@ -3,13 +3,13 @@ import Charts
 
 struct DailyChartsView: View {
     var foodEntries: [FoodEntry]
-    
+
     let mealColors: [MealType: Color] = [
         .breakfast: .orange,
         .lunch: .green,
         .dinner: .blue
     ]
-    
+
     struct PerMealData: Identifiable {
         let meal: MealType
         let calories: Double
@@ -17,12 +17,12 @@ struct DailyChartsView: View {
     }
     var caloriesByMeal: [PerMealData] {
         MealType.allCases.map { type in
-            PerMealData(meal: type, calories:
-                foodEntries.filter { $0.mealType == type }
-                           .reduce(0) { $0 + $1.calories })
+            let sum = foodEntries.filter { $0.mealType == type }
+                .reduce(0) { $0 + $1.calories }
+            return PerMealData(meal: type, calories: sum)
         }
     }
-    
+
     struct Macro: Identifiable {
         let id = UUID()
         let name: String
@@ -37,15 +37,15 @@ struct DailyChartsView: View {
         ]
     }
     var totalProtein: Double {
-        foodEntries.reduce(0) { $0 + ($1.food?.protein ?? 0) * $1.servingSize/100 }
+        foodEntries.reduce(0) { $0 + ($1.food?.protein ?? 0) * $1.servingSize / 100 }
     }
     var totalCarbs: Double {
-        foodEntries.reduce(0) { $0 + ($1.food?.carbs ?? 0) * $1.servingSize/100 }
+        foodEntries.reduce(0) { $0 + ($1.food?.carbs ?? 0) * $1.servingSize / 100 }
     }
     var totalFat: Double {
-        foodEntries.reduce(0) { $0 + ($1.food?.fat ?? 0) * $1.servingSize/100 }
+        foodEntries.reduce(0) { $0 + ($1.food?.fat ?? 0) * $1.servingSize / 100 }
     }
-    
+
     struct FoodPortion: Identifiable {
         let name: String
         let serving: Double
@@ -60,7 +60,7 @@ struct DailyChartsView: View {
             )
         }
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 35) {
@@ -85,15 +85,15 @@ struct DailyChartsView: View {
                     .frame(height: 200)
                     .padding(.horizontal)
                     HStack(spacing: 22) {
-                                           Label("Protéines", systemImage: "circle.fill")
-                                               .foregroundColor(.orange)
-                                           Label("Glucides", systemImage: "circle.fill")
-                                               .foregroundColor(.green)
-                                           Label("Lipides", systemImage: "circle.fill")
-                                               .foregroundColor(.blue)
-                                       }
-                                       .font(.caption)
-                                       .padding(.leading, 18)
+                        Label("Protéines", systemImage: "circle.fill")
+                            .foregroundColor(.orange)
+                        Label("Glucides", systemImage: "circle.fill")
+                            .foregroundColor(.green)
+                        Label("Lipides", systemImage: "circle.fill")
+                            .foregroundColor(.blue)
+                    }
+                    .font(.caption)
+                    .padding(.leading, 18)
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -110,7 +110,6 @@ struct DailyChartsView: View {
                     }
                     .frame(height: 180)
                     .padding(.horizontal)
-                    
                 }
 
                 VStack(alignment: .leading, spacing: 8) {

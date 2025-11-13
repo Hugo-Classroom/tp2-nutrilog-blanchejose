@@ -3,31 +3,20 @@ import SwiftData
 
 struct FoodDetailView: View {
     let food: Food
-    
     @Environment(\.dismiss) private var dismiss
     @Query private var allEntries: [FoodEntry]
-    
+
     private var foodEntries: [FoodEntry] {
-        let filtered = allEntries.filter { entry in
-            guard let entryFood = entry.food else { return false }
-            return entryFood.name == food.name
-        }.sorted { $0.date > $1.date }
-        
-        print(" Historique pour \(food.name): \(filtered.count) entrées trouvées")
-        for entry in filtered {
-            print("   - \(entry.mealType.rawValue) le \(entry.date) (\(Int(entry.servingSize))g)")
-        }
-        
-        return filtered
+        allEntries
+            .filter { $0.food?.name == food.name }
+            .sorted { $0.date > $1.date }
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(spacing: 2) {
-                    Button(action: {
-                        dismiss()
-                    }) {
+                    Button(action: { dismiss() }) {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
                                 .foregroundColor(.orange)
@@ -39,12 +28,12 @@ struct FoodDetailView: View {
                     }
                     Spacer()
                 }
-                
+
                 Text(food.name)
                     .font(.system(size: 32, weight: .bold))
                     .foregroundColor(.primary)
                     .padding(.horizontal)
-                
+
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Int(food.calories)) cal")
@@ -94,19 +83,18 @@ struct FoodDetailView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)
-                
+
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Historique de consommation")
                         .font(.headline)
                         .foregroundColor(.primary)
                         .padding(.horizontal)
                         .padding(.top, 16)
-                    
+
                     if foodEntries.isEmpty {
                         HStack {
                             Spacer()
                             VStack(spacing: 8) {
-                               
                                 Text("Aucun historique")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
@@ -137,10 +125,9 @@ struct FoodDetailView: View {
                                     }
                                     .padding(.horizontal)
                                     .padding(.vertical, 12)
-                                   
+
                                     if index < foodEntries.count - 1 {
-                                        Divider()
-                                            .padding(.horizontal)
+                                        Divider().padding(.horizontal)
                                     }
                                 }
                             }
@@ -150,7 +137,7 @@ struct FoodDetailView: View {
                         .padding(.horizontal)
                     }
                 }
-                
+
                 Spacer()
             }
         }
