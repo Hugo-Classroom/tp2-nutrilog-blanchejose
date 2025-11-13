@@ -25,7 +25,7 @@ struct LoginView: View {
                     }
                     .foregroundColor(.white)
                     .frame(width: 200, height: 44)
-                    .background(Color(red: 0.961, green: 0.62, blue: 0.043)) // #F59E0B
+                    .background(Color(red: 0.961, green: 0.62, blue: 0.043))
                     .cornerRadius(10)
                 }
                 .padding(.bottom, 70)
