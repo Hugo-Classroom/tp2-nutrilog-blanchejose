@@ -1,123 +1,178 @@
 import SwiftUI
+import SwiftData
 
 struct FoodDetailView: View {
     let food: Food
-    let entries: [FoodEntry]
-    @Environment(\.dismiss) private var dismiss  // permet de revenir en arrière
+    
+    @Environment(\.dismiss) private var dismiss
+    @Query private var allEntries: [FoodEntry]
+    
+    private var foodEntries: [FoodEntry] {
+        let filtered = allEntries.filter { entry in
+            guard let entryFood = entry.food else { return false }
+            return entryFood.name == food.name
+        }.sorted { $0.date > $1.date }
+        
+        print(" Historique pour \(food.name): \(filtered.count) entrées trouvées")
+        for entry in filtered {
+            print("   - \(entry.mealType.rawValue) le \(entry.date) (\(Int(entry.servingSize))g)")
+        }
+        
+        return filtered
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 2) {  // réduit l'espacement
-                Button(action: {
-                    dismiss() // revient à l'écran précédent / accueil
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.orange)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 2) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.orange)
+                            Text("Aujourd'hui")
+                                .font(.subheadline)
+                                .foregroundColor(.orange)
+                        }
                         .padding(8)
+                    }
+                    Spacer()
                 }
-
-                Button(action: {
-                    dismiss() // même action si on clique sur "Aujourd'hui"
-                }) {
-                    Text("Aujourd'hui")
-                        .font(.subheadline)
-                        .foregroundColor(.orange)
-                        .padding(.vertical, 8)
-                        .padding(.trailing, 8)
-                }
-
-                Spacer()
-            }
-
-            Text(food.name)
-                .font(.system(size: 32))
-                .foregroundColor(.primary)
-                .padding(.horizontal, 8)
-
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(Int(food.calories)) cal")
-                        .font(.title3)
-                        .fontWeight(.regular)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                HStack(spacing: 20) {
-                    VStack(spacing: 2) {
-                        HStack(spacing:2){
-                            Text("\(Int(food.protein))")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Text("g")
-                        }
-                        Text("Protéines")
-                            .font(.caption2)
+                
+                Text(food.name)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.primary)
+                    .padding(.horizontal)
+                
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(Int(food.calories)) cal")
+                            .font(.title3)
+                            .fontWeight(.regular)
                             .foregroundColor(.secondary)
                     }
-                    VStack(spacing: 2) {
-                        HStack(spacing:2){
-                            Text("\(Int(food.carbs))")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Text("g")
-                        }
-                        Text("Glucides")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                    VStack(spacing: 2) {
-                        HStack(spacing: 2) {
-                            Text("\(Int(food.fat))")
-                                .font(.headline)
-                                .fontWeight(.bold)
-                            Text("g")
-                        }
-                        Text("Lipides")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top)
-
-            Text("Historique de consommation")
-                .font(.headline)
-                .foregroundColor(.primary)
-                .padding(.horizontal)
-                .padding(.top, 16)
-            
-            VStack(spacing: 0) {
-                ForEach(entries, id: \.date) { entry in
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.mealType.rawValue)
-                            Text(entry.date, style: .date)
-                                .font(.caption)
+                    Spacer()
+                    HStack(spacing: 20) {
+                        VStack(spacing: 2) {
+                            HStack(spacing: 2) {
+                                Text("\(Int(food.protein))")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Text("g")
+                                    .font(.caption)
+                            }
+                            Text("Protéines")
+                                .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
-                        Spacer()
-                        Text("\(Int(entry.servingSize)) g")
-                            .foregroundColor(.secondary)
-                            .font(.body)
+                        VStack(spacing: 2) {
+                            HStack(spacing: 2) {
+                                Text("\(Int(food.carbs))")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Text("g")
+                                    .font(.caption)
+                            }
+                            Text("Glucides")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        VStack(spacing: 2) {
+                            HStack(spacing: 2) {
+                                Text("\(Int(food.fat))")
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                                Text("g")
+                                    .font(.caption)
+                            }
+                            Text("Lipides")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
                 }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Historique de consommation")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                    
+                    if foodEntries.isEmpty {
+                        HStack {
+                            Spacer()
+                            VStack(spacing: 8) {
+                               
+                                Text("Aucun historique")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.vertical, 40)
+                            Spacer()
+                        }
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    } else {
+                        VStack(spacing: 0) {
+                            ForEach(Array(foodEntries.enumerated()), id: \.element.date) { index, entry in
+                                VStack(spacing: 0) {
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(entry.mealType.rawValue)
+                                                .font(.body)
+                                                .fontWeight(.medium)
+                                            Text(entry.date, style: .date)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        Spacer()
+                                        Text("\(Int(entry.servingSize)) g")
+                                            .foregroundColor(.secondary)
+                                            .font(.body)
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 12)
+                                   
+                                    if index < foodEntries.count - 1 {
+                                        Divider()
+                                            .padding(.horizontal)
+                                    }
+                                }
+                            }
+                        }
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                    }
+                }
+                
+                Spacer()
             }
-            .background(Color(.systemBackground))
-
-            Spacer()
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .background(Color(.systemBackground))
     }
 }
 
 #Preview {
-    FoodDetailView(
-        food: MockData.banana,
-        entries: MockData.foodEntries.filter { $0.food?.name == MockData.banana.name }
-    )
+    NavigationStack {
+        FoodDetailView(
+            food: Food(
+                name: "Banane",
+                calories: 89,
+                protein: 1,
+                carbs: 23,
+                fat: 0,
+                desc: "Riche en potassium"
+            )
+        )
+        .modelContainer(for: [Food.self, FoodEntry.self])
+    }
 }

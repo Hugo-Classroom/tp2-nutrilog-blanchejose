@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MealRow: View {
     var mealType: MealType
@@ -6,14 +7,23 @@ struct MealRow: View {
     var onTap: (Food) -> Void
     var onDelete: (FoodEntry) -> Void
 
-    var totalCalories: Int {
-        entries.reduce(0) { $0 + Int($1.calories) }
+    private var totalProtein: Double {
+        entries.reduce(0) { $0 + ($1.food?.protein ?? 0) * $1.servingSize / 100 }
+    }
+    private var totalCarbs: Double {
+        entries.reduce(0) { $0 + ($1.food?.carbs ?? 0) * $1.servingSize / 100 }
+    }
+    private var totalFat: Double {
+        entries.reduce(0) { $0 + ($1.food?.fat ?? 0) * $1.servingSize / 100 }
+    }
+    private var totalCalories: Int {
+        Int(entries.reduce(0) { $0 + $1.calories })
     }
 
     var body: some View {
         if entries.isEmpty { EmptyView() }
         else {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(mealType.rawValue)
                         .font(.subheadline)
@@ -21,12 +31,10 @@ struct MealRow: View {
                         .foregroundColor(.secondary)
                     Spacer()
                     HStack(spacing: 4) {
+                        if totalProtein > 0 { MacroCircle(color: .red, letter: "P") }
+                        if totalCarbs > 0 { MacroCircle(color: .purple, letter: "G") }
+                        if totalFat > 0 { MacroCircle(color: .blue, letter: "L") }
                         if totalCalories > 0 {
-                            if let firstEntry = entries.first, let food = firstEntry.food {
-                                if food.protein > 0 { MacroCircle(color: .red, letter: "P") }
-                                if food.carbs > 0 { MacroCircle(color: .purple, letter: "G") }
-                                if food.fat > 0 { MacroCircle(color: .blue, letter: "L") }
-                            }
                             Text("\(totalCalories) CAL")
                                 .font(.caption)
                                 .fontWeight(.semibold)
@@ -35,7 +43,7 @@ struct MealRow: View {
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding()
+                .padding(.top, 8)
 
                 VStack(spacing: 10) {
                     ForEach(entries, id: \.id) { entry in
@@ -46,7 +54,6 @@ struct MealRow: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(entry.food?.name ?? "-")
                                         .foregroundColor(.black)
-                                    
                                     if let desc = entry.food?.desc {
                                         Text(desc)
                                             .font(.caption2)
@@ -68,14 +75,16 @@ struct MealRow: View {
                         }
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                onDelete(entry)
+                                withAnimation {
+                                    onDelete(entry)
+                                }
                             } label: {
                                 Label("Supprimer", systemImage: "trash")
                             }
                         }
                     }
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 8)
             }
             .background(Color(.clear))
             .cornerRadius(14)
@@ -99,6 +108,7 @@ struct MacroCircle: View {
         }
     }
 }
+
 
 #Preview {
     struct PreviewHolder: View {

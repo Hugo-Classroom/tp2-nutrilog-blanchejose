@@ -4,15 +4,18 @@ import SwiftData
 struct AddMealView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var modelContext
+    
+    @Query private var allFoods: [Food]
 
     @State private var selectedFoodIndex: Int = 0
     @State private var portion: Double = 120
     @State private var mealType: MealType = .dinner
 
-    let foods = MockData.foods
     let orange = Color(red: 245/255, green: 158/255, blue: 11/255)
 
-    var selectedFood: Food? { foods.isEmpty ? nil : foods[selectedFoodIndex] }
+    var selectedFood: Food? {
+        allFoods.isEmpty ? nil : allFoods[selectedFoodIndex]
+    }
 
     var macros: (calories: Double, protein: Double, carbs: Double, fat: Double) {
         guard let food = selectedFood else { return (0,0,0,0) }
@@ -30,7 +33,6 @@ struct AddMealView: View {
             Color(.systemBackground).ignoresSafeArea()
             
             VStack(spacing: 16) {
-                // HEADER
                 HStack {
                     Button(action: { dismiss() }) {
                         Image(systemName: "xmark")
@@ -47,10 +49,9 @@ struct AddMealView: View {
                 }
                 .padding(.horizontal)
 
-                // PICKER ALIMENT
                 Picker("", selection: $selectedFoodIndex) {
-                    ForEach(0..<foods.count, id: \.self) { i in
-                        Text(foods[i].name)
+                    ForEach(0..<allFoods.count, id: \.self) { i in
+                        Text(allFoods[i].name)
                     }
                 }
                 .pickerStyle(.menu)
@@ -58,7 +59,6 @@ struct AddMealView: View {
                 .labelsHidden()
                 .padding(.horizontal)
 
-                // PORTION
                 HStack {
                     Text("Portions : \(Int(portion)) g")
                         .font(.system(size: 15))
@@ -81,7 +81,6 @@ struct AddMealView: View {
                 }
                 .padding(.horizontal)
 
-                // TYPE DE REPAS
                 HStack(spacing: 10) {
                     ForEach(MealType.allCases) { type in
                         Button {
@@ -103,7 +102,6 @@ struct AddMealView: View {
                 .cornerRadius(12)
                 .padding(.horizontal)
 
-                // MACROS
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Macros pour \(Int(portion)) g")
                         .font(.subheadline)
@@ -133,18 +131,7 @@ struct AddMealView: View {
 
                 Spacer()
 
-                Button(action: {
-                    if let food = selectedFood {
-                        let entry = FoodEntry(
-                            food: food,
-                            servingSize: portion,
-                            mealType: mealType
-                        )
-                        modelContext.insert(entry)  // <- sauvegarde dans SwiftData
-                        try? modelContext.save()
-                    }
-                    dismiss()
-                }) {
+                Button(action: saveEntry) {
                     Text("Sauvegarder")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -154,12 +141,37 @@ struct AddMealView: View {
                         .cornerRadius(13)
                         .padding(.horizontal)
                 }
+                .disabled(selectedFood == nil)
+                .opacity(selectedFood == nil ? 0.6 : 1)
                 .padding(.bottom, 20)
+
             }
         }
+    }
+
+    private func saveEntry() {
+        guard let food = selectedFood else { return }
+
+        let entry = FoodEntry(
+            food: food,
+            servingSize: portion,
+            mealType: mealType,
+            date: Date()
+        )
+
+        modelContext.insert(entry)
+        do {
+            try modelContext.save()
+            print(" Entrée sauvegardée: \(food.name), \(Int(portion))g, \(mealType.rawValue)")
+        } catch {
+            print("Erreur: \(error.localizedDescription)")
+        }
+
+        dismiss()
     }
 }
 
 #Preview {
     AddMealView()
+        .modelContainer(for: [Food.self, FoodEntry.self])
 }

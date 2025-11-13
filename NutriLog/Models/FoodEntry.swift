@@ -1,12 +1,14 @@
 import Foundation
 import SwiftData
 
+
 @Model
-class FoodEntry {
+class FoodEntry: Identifiable {
     var date: Date
-    var servingSize: Double // en grammes 
-    var food: Food?
+    var servingSize: Double // en grammes
     var mealType: MealType
+    
+    var food: Food?
     
     init(food: Food?, servingSize: Double, mealType: MealType, date: Date = .now) {
         self.food = food
@@ -15,9 +17,24 @@ class FoodEntry {
         self.date = date
     }
 
-    // Exemple de calcul pour déterminer le nombre de calories de l'aliment par 100g de portion
+    // Calculs des macros
     var calories: Double {
         guard let food else { return 0 }
         return food.calories * servingSize / 100
+    }
+    
+    var protein: Double {
+        guard let food else { return 0 }
+        return food.protein * servingSize / 100
+    }
+    
+    var carbs: Double {
+        guard let food else { return 0 }
+        return food.carbs * servingSize / 100
+    }
+    
+    var fat: Double {
+        guard let food else { return 0 }
+        return food.fat * servingSize / 100
     }
 }

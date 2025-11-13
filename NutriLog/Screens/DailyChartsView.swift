@@ -5,11 +5,12 @@ struct DailyChartsView: View {
     var foodEntries: [FoodEntry]
     
     let mealColors: [MealType: Color] = [
-        .breakfast: .orange,  // Déjeuner
-        .lunch: .green,       // Dîner
-        .dinner: .blue        // Souper
+        .breakfast: .orange,
+        .lunch: .green,
+        .dinner: .blue
     ]
-        struct PerMealData: Identifiable {
+    
+    struct PerMealData: Identifiable {
         let meal: MealType
         let calories: Double
         var id: MealType { meal }
@@ -30,8 +31,8 @@ struct DailyChartsView: View {
     }
     var macrosData: [Macro] {
         [
-            Macro(name: "Protéines", value: totalProtein, color: .orange),
-            Macro(name: "Glucides", value: totalCarbs, color: .green),
+            Macro(name: "Protéines", value: totalProtein, color: .red),
+            Macro(name: "Glucides", value: totalCarbs, color: .purple),
             Macro(name: "Lipides", value: totalFat, color: .blue)
         ]
     }
@@ -62,44 +63,39 @@ struct DailyChartsView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 34) {
+            VStack(alignment: .leading, spacing: 35) {
                 Text("Graphiques")
                     .font(.system(size: 28, weight: .bold))
                     .padding(.leading, 18)
                     .padding(.top, 8)
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Calories par repas")
                         .font(.headline)
                         .padding(.horizontal, 20)
-                 
                     Chart {
                         ForEach(caloriesByMeal) { item in
                             BarMark(
                                 x: .value("Repas", item.meal.rawValue),
-                                y: .value("Calories", item.calories)
+                                y: .value("Cal", item.calories)
                             )
                             .foregroundStyle(mealColors[item.meal] ?? .gray)
                         }
                     }
-                    .frame(height: 210)
+                    .frame(height: 200)
                     .padding(.horizontal)
-                    .chartYScale(domain: [0, 1000])
-                    .chartYAxis {
-                        AxisMarks(values: [0, 250, 500, 750, 1000])
-                    }
                     HStack(spacing: 22) {
-                        Label("Protéines", systemImage: "circle.fill")
-                            .foregroundColor(.orange)
-                        Label("Glucides", systemImage: "circle.fill")
-                            .foregroundColor(.green)
-                        Label("Lipides", systemImage: "circle.fill")
-                            .foregroundColor(.blue)
-                    }
-                    .font(.caption)
-                    .padding(.leading, 18)
+                                           Label("Protéines", systemImage: "circle.fill")
+                                               .foregroundColor(.orange)
+                                           Label("Glucides", systemImage: "circle.fill")
+                                               .foregroundColor(.green)
+                                           Label("Lipides", systemImage: "circle.fill")
+                                               .foregroundColor(.blue)
+                                       }
+                                       .font(.caption)
+                                       .padding(.leading, 18)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Macros Totaux")
                         .font(.headline)
@@ -112,17 +108,15 @@ struct DailyChartsView: View {
                             .foregroundStyle(macro.color)
                         }
                     }
-                    .frame(height: 160)
+                    .frame(height: 180)
                     .padding(.horizontal)
                     
-                  
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Distribution des aliments")
                         .font(.headline)
                         .padding(.horizontal, 20)
-               
                     Chart {
                         ForEach(foodsPortionData) { portion in
                             BarMark(
@@ -131,7 +125,7 @@ struct DailyChartsView: View {
                             )
                             .annotation(position: .trailing) {
                                 Text("\(Int(portion.serving))g")
-                                    .font(.caption2)
+                                    .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             .foregroundStyle(Color.orange)
