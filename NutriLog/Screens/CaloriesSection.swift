@@ -19,6 +19,7 @@ struct CaloriesSection: View {
             
             VStack(spacing: 2) {
                 Text("Restantes")
+                    .fontWeight(.semibold)
                 Text("\(Int(dailyGoal - totalCalories)) cal")
                     .font(.title3)
                     .fontWeight(.semibold)
@@ -51,9 +52,11 @@ struct CaloriesSection: View {
           
             VStack(spacing: 2) {
                 Text("Consommées")
+                    .fontWeight(.semibold)
                 Text("\(Int(totalCalories)) cal")
                     .font(.title3)
                     .fontWeight(.semibold)
+
             }
             .frame(maxWidth: .infinity)
             .padding()

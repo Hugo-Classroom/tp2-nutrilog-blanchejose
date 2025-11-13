@@ -36,7 +36,6 @@ struct MealRow: View {
                         if totalFat > 0 { MacroCircle(color: .blue, letter: "L") }
                         if totalCalories > 0 {
                             Text("\(totalCalories) CAL")
-                                .font(.caption)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
                         }
@@ -62,8 +61,7 @@ struct MealRow: View {
                                 }
                                 Spacer()
                                 Text("\(Int(entry.calories)) kcal")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.black)
                                 Image(systemName: "chevron.right")
                                     .foregroundColor(.gray)
                             }

@@ -43,14 +43,14 @@ struct MacrosSection: View {
                     .fontWeight(.semibold)
             }
             .foregroundColor(color)
-            ProgressView(value: min(value / goal, 2.0))
+            ProgressView(value: min(max(value / goal, 0), 1))
                 .progressViewStyle(.linear)
                 .tint(color)
                 .frame(height: 6)
+
             
             Text("\(Int(value))/\(Int(goal)) g")
 
-            
         }
     }
 }
